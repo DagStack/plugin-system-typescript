@@ -1,0 +1,66 @@
+{
+  "name": "@dagstack/plugin-system",
+  "version": "0.2.1",
+  "description": "TypeScript / Node.js implementation of dagstack/plugin-system — orchestration-neutral plugin registry with manifest-driven discovery and a single contract across Python, TypeScript, and Go.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./kinds/tool/v1": {
+      "types": "./dist/_generated/kinds/tool/v1.d.ts",
+      "import": "./dist/_generated/kinds/tool/v1.js"
+    },
+    "./kinds/orchestrator/v1": {
+      "types": "./dist/_generated/kinds/orchestrator/v1.d.ts",
+      "import": "./dist/_generated/kinds/orchestrator/v1.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "emit": "uv run python spec/emitters/typescript_zod.py --output src/_generated && for f in $(find src/_generated -type d); do touch \"$f/.gitkeep\" 2>/dev/null || true; done",
+    "emit:check": "uv run python spec/emitters/typescript_zod.py --check",
+    "build": "tsc -b",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "echo 'TODO: eslint setup' && exit 0",
+    "sync": "git submodule update --init --recursive && npm install"
+  },
+  "keywords": [
+    "plugin",
+    "plugins",
+    "extension",
+    "framework",
+    "dagstack"
+  ],
+  "author": "Evgenii Demchenko <demchenkoev@gmail.com>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dagstack/plugin-system-typescript.git"
+  },
+  "homepage": "https://github.com/dagstack/plugin-system-typescript",
+  "bugs": {
+    "url": "https://github.com/dagstack/plugin-system-typescript/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@types/semver": "^7.7.1",
+    "semver": "^7.7.4",
+    "smol-toml": "^1.6.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.1.0"
+  }
+}
