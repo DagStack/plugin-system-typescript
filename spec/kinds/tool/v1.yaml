@@ -1,0 +1,40 @@
+# Kind: tool — function-style plugin with one or more executable hooks.
+#
+# A close cousin of the OpenAI/MCP "tool" concept: a tool has a JSON-schema
+# signature, takes structured args, and returns a structured result. On top
+# of that, dagstack adds hook composition (Broadcast-Collect for get_schema,
+# so a single plugin can hand back several schemas at once — for example,
+# calc + format inside one plugin).
+
+kind: tool
+kind_api_version: "1.0.0"
+
+description: |
+  Function-style plugin: one or more executable hooks; each takes
+  structured args and returns a structured result. Used as the unit for
+  agent tool catalogues, MCP tool registration, and model tool calling.
+
+# The full list of hooks for this kind. Each hook is a separate JSON-RPC
+# method in the MCP wrapper (when mcp_exposed: true).
+hooks:
+  - name: get_schema
+    dispatch: broadcast_collect
+    description: |
+      List of JSON schemas for the functions the plugin exposes. A single
+      plugin may return several schemas (multi-tool plugin). The function
+      name inside a schema is globally unique within the plugin's namespace.
+    input_schema: schemas/empty.json
+    output_schema: schemas/get_schema.output.json
+    mcp_exposed: false   # not sent over MCP — encapsulated in the server boot
+
+  - name: execute
+    dispatch: singleton
+    description: |
+      Execute a tool with arguments. The arguments are validated against
+      the schema returned by get_schema (the host validates BEFORE
+      dispatching to the plugin). Singleton dispatch means that there must
+      be exactly one handler for each (kind, plugin_name, function_name).
+    input_schema: schemas/execute.input.json
+    output_schema: schemas/execute.output.json
+    mcp_exposed: true
+    mcp_tool_name_template: "{kind}.{plugin}.{hook}.{function}"

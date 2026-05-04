@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dagstack.dev/spec/v1/kinds/orchestrator/v1/status.input.json",
+  "title": "orchestrator.status input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["unit_id"],
+  "properties": {
+    "unit_id": { "type": "string" }
+  }
+}

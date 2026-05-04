@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dagstack.dev/spec/v1/kinds/tool/v1/empty.json",
+  "title": "Empty payload",
+  "description": "Hook takes no arguments / returns no data.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {}
+}

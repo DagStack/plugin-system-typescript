@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dagstack.dev/spec/v1/kinds/orchestrator/v1/status.output.json",
+  "title": "orchestrator.status output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["unit_id", "state"],
+  "properties": {
+    "unit_id": { "type": "string" },
+    "state": {
+      "type": "string",
+      "enum": ["queued", "running", "succeeded", "failed", "cancelled", "expired"]
+    },
+    "started_at": { "type": "string", "format": "date-time" },
+    "finished_at": { "type": "string", "format": "date-time" },
+    "progress": {
+      "type": "object",
+      "description": "Optional sink aggregate: % completion, last_checkpoint, etc."
+    },
+    "error": { "type": "string" }
+  }
+}

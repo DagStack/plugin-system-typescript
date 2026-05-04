@@ -1,0 +1,47 @@
+# Kind: orchestrator — runs unit-of-work plugins with lifecycle and checkpointing.
+#
+# See DST-0003 §Orchestrator: Singleton (only one per runtime), always
+# in_process_only. The default in-tree implementation is
+# LocalExecutorOrchestrator (Phase 1).
+
+kind: orchestrator
+kind_api_version: "1.0.0"
+
+description: |
+  Singleton plugin (only one per runtime); responsible for running
+  unit-of-work plugins: enqueueing work, tracking statuses, retries,
+  checkpointing, and backfill. Always in_process_only=true (an
+  orchestrator cannot live behind the MCP wire — it keeps state in the
+  host process memory).
+
+constraints:
+  in_process_only: true
+  singleton_per_runtime: true
+
+hooks:
+  - name: enqueue
+    dispatch: singleton
+    description: |
+      Enqueue a unit of work for execution. Returns a unit_id for
+      tracking. The implementation must be idempotent on
+      `idempotency_key` when one is supplied.
+    input_schema: schemas/enqueue.input.json
+    output_schema: schemas/enqueue.output.json
+    mcp_exposed: false   # in_process_only — no MCP wire
+
+  - name: status
+    dispatch: singleton
+    description: |
+      Current status of a unit of work, looked up by unit_id.
+    input_schema: schemas/status.input.json
+    output_schema: schemas/status.output.json
+    mcp_exposed: false
+
+  - name: backfill
+    dispatch: singleton
+    description: |
+      Re-run failed/expired units selected by a filter (partition, time,
+      state).
+    input_schema: schemas/backfill.input.json
+    output_schema: schemas/backfill.output.json
+    mcp_exposed: false

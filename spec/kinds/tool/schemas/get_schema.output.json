@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dagstack.dev/spec/v1/kinds/tool/v1/get_schema.output.json",
+  "title": "tool.get_schema output",
+  "description": "List of JSON schemas for the functions the plugin exposes.",
+  "type": "array",
+  "items": {
+    "$ref": "#/$defs/FunctionSchema"
+  },
+  "$defs": {
+    "FunctionSchema": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description", "parameters"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Globally unique function name within the plugin's namespace. snake_case.",
+          "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "description": {
+          "type": "string",
+          "description": "What the function does. Used by the LLM when selecting a tool."
+        },
+        "parameters": {
+          "description": "JSON Schema for the function's arguments (as in OpenAI function calling).",
+          "type": "object"
+        }
+      }
+    }
+  }
+}

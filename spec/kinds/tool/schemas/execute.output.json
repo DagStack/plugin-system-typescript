@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dagstack.dev/spec/v1/kinds/tool/v1/execute.output.json",
+  "title": "tool.execute output",
+  "description": "Call result. Free-form — the structure is defined by the function itself through `result.schema` on FunctionSchema (Phase 1+ optional).",
+  "type": "object",
+  "properties": {
+    "result": {
+      "description": "Arbitrary JSON-serialisable value."
+    },
+    "is_error": {
+      "type": "boolean",
+      "default": false,
+      "description": "true if the plugin treated the call as an error — the host should translate this into an exception for the caller."
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Human-readable message when is_error=true."
+    }
+  },
+  "required": ["result"]
+}

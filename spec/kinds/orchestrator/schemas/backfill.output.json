@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dagstack.dev/spec/v1/kinds/orchestrator/v1/backfill.output.json",
+  "title": "orchestrator.backfill output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["enqueued_count"],
+  "properties": {
+    "enqueued_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "How many units of work were re-enqueued."
+    },
+    "skipped_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "How many were skipped (did not match the filter / already running)."
+    }
+  }
+}

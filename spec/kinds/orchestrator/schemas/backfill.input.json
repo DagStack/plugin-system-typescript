@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dagstack.dev/spec/v1/kinds/orchestrator/v1/backfill.input.json",
+  "title": "orchestrator.backfill input",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "plugin_name": { "type": "string", "description": "Optional: only this plugin." },
+    "partition_key": { "type": "string", "description": "Optional: only this partition." },
+    "since": { "type": "string", "format": "date-time" },
+    "until": { "type": "string", "format": "date-time" },
+    "states": {
+      "type": "array",
+      "items": { "enum": ["failed", "expired", "cancelled"] },
+      "description": "Which states to re-run. Default: failed+expired."
+    }
+  }
+}

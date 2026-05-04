@@ -1,0 +1,57 @@
+# Closed enum of hook dispatch classes — pinned by DST-0002.
+# Extending this enum is allowed ONLY through an ADR (a new dispatch class
+# is a breaking change to the spec).
+#
+# Every kind/<kind>/v<N>.yaml hook must declare a `dispatch` value drawn
+# from the keys below.
+
+dispatch_classes:
+  singleton:
+    description: |
+      Only one plugin services the hook. If more than one is registered,
+      the first non-None result is selected (firstresult semantics). For a
+      DAG host this means "one plugin per (kind, name)"; for MCP, one tool
+      with the given name.
+    short: "1-of-N: first non-None"
+    typical_use: ["execute", "run", "call"]
+    error_on_zero_results: true
+
+  broadcast_collect:
+    description: |
+      Every registered plugin is invoked; results are collected into a list
+      in registration order (the order may be refined through `priority` /
+      `depends_on` in the manifest). An empty list is a valid result.
+    short: "N-of-N: list of results"
+    typical_use: ["get_schema", "list_capabilities", "describe"]
+    error_on_zero_results: false
+
+  broadcast_notify:
+    description: |
+      Every registered plugin is invoked; results are NOT collected
+      (fire-and-forget). Used for side-effect notification: log shipper,
+      metrics publisher, audit trail. An exception in one plugin does NOT
+      stop the others; errors are logged and the hook returns void.
+    short: "N-of-N: side-effects, no return"
+    typical_use: ["on_started", "on_request", "on_error"]
+    error_on_zero_results: false
+
+  chain:
+    description: |
+      The plugins form a pipeline: the result of the first plugin is passed
+      to the second as input, and so on. The order is set by `priority` /
+      `depends_on`. Aborting the chain is done by an explicit return of a
+      special sentinel or by raising an exception.
+    short: "ordered pipeline: out_1 -> in_2 -> out_2 -> in_3 -> ..."
+    typical_use: ["transform", "preprocess", "rewrite"]
+    error_on_zero_results: true
+
+  capability:
+    description: |
+      Dynamic dispatch: the call carries a set of required capabilities
+      (tags); among the registered plugins, the one whose declared
+      capability set covers the requirement is selected. If several match,
+      `priority` is used as the tiebreaker. Zero matches yields
+      KindUnknown / NoCapableHandler.
+    short: "best-match by capability tags"
+    typical_use: ["resolve", "open", "render"]
+    error_on_zero_results: true

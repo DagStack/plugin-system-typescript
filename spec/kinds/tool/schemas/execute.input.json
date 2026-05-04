@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dagstack.dev/spec/v1/kinds/tool/v1/execute.input.json",
+  "title": "tool.execute input",
+  "description": "Arguments for invoking an executable function.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["function", "args"],
+  "properties": {
+    "function": {
+      "type": "string",
+      "description": "Function name as listed by get_schema (snake_case)."
+    },
+    "args": {
+      "type": "object",
+      "description": "Arguments conforming to this function's JSON Schema. The host validates them BEFORE dispatch."
+    }
+  }
+}

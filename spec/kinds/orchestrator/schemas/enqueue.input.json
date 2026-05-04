@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dagstack.dev/spec/v1/kinds/orchestrator/v1/enqueue.input.json",
+  "title": "orchestrator.enqueue input",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["plugin_name", "args"],
+  "properties": {
+    "plugin_name": {
+      "type": "string",
+      "description": "Name of the unit-of-work plugin, taken from its manifest."
+    },
+    "args": {
+      "type": "object",
+      "description": "Arguments for the unit-of-work plugin."
+    },
+    "idempotency_key": {
+      "type": "string",
+      "description": "Optional key for deduplication."
+    },
+    "partition_key": {
+      "type": "string",
+      "description": "Partition used for sharding (see DST-0003 §Invariant 5)."
+    }
+  }
+}

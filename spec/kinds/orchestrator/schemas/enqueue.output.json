@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dagstack.dev/spec/v1/kinds/orchestrator/v1/enqueue.output.json",
+  "title": "orchestrator.enqueue output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["unit_id", "deduplicated"],
+  "properties": {
+    "unit_id": {
+      "type": "string",
+      "description": "Globally unique id (UUID or ULID) used for tracking."
+    },
+    "deduplicated": {
+      "type": "boolean",
+      "description": "true if a unit with this idempotency_key already existed."
+    }
+  }
+}

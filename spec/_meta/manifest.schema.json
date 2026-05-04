@@ -1,0 +1,325 @@
+{
+  "$defs": {
+    "ResourcesSpec": {
+      "additionalProperties": false,
+      "description": "Declaration of required and optional resources (ADR-0003 §Invariant 3).\n\nIn Phase 0 the Registry reads these fields but does not perform DI injection — that is Phase 1.",
+      "properties": {
+        "required": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Required",
+          "type": "array"
+        },
+        "optional": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Optional",
+          "type": "array"
+        }
+      },
+      "title": "ResourcesSpec",
+      "type": "object"
+    },
+    "UnitOfWorkSpec": {
+      "additionalProperties": false,
+      "description": "Declaration of a unit of work for a long-running plugin (ADR-0003 §Invariant 5).\n\nWhen `declared = false`, the remaining fields are ignored.",
+      "properties": {
+        "declared": {
+          "default": false,
+          "title": "Declared",
+          "type": "boolean"
+        },
+        "partition_key": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Partition Key"
+        },
+        "estimated_duration_sec": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Estimated Duration Sec"
+        },
+        "idempotency_mode": {
+          "default": "none",
+          "enum": [
+            "output_hash",
+            "input_hash",
+            "none"
+          ],
+          "title": "Idempotency Mode",
+          "type": "string"
+        },
+        "checkpointable": {
+          "default": false,
+          "title": "Checkpointable",
+          "type": "boolean"
+        }
+      },
+      "title": "UnitOfWorkSpec",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Plugin manifest. The single source of truth for the Registry.\n\nRequired fields (ADR-0001): `schema_version`, `name`, `kind`,\n`kind_api_version`, `core_version`, `runtime`. The remaining fields\nare optional with safe defaults, so that manifests written for earlier\nphases keep working.",
+  "properties": {
+    "schema_version": {
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "kind": {
+      "title": "Kind",
+      "type": "string"
+    },
+    "kind_api_version": {
+      "title": "Kind Api Version",
+      "type": "string"
+    },
+    "core_version": {
+      "title": "Core Version",
+      "type": "string"
+    },
+    "runtime": {
+      "enum": [
+        "in_process",
+        "mcp_stdio",
+        "mcp_http"
+      ],
+      "title": "Runtime",
+      "type": "string"
+    },
+    "license": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "License"
+    },
+    "maintainer": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Maintainer"
+    },
+    "homepage": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Homepage"
+    },
+    "capabilities": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Capabilities",
+      "type": "array"
+    },
+    "priority": {
+      "default": 0,
+      "title": "Priority",
+      "type": "integer"
+    },
+    "depends_on": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Depends On",
+      "type": "array"
+    },
+    "tryfirst": {
+      "default": false,
+      "title": "Tryfirst",
+      "type": "boolean"
+    },
+    "trylast": {
+      "default": false,
+      "title": "Trylast",
+      "type": "boolean"
+    },
+    "startup_timeout_sec": {
+      "default": 30,
+      "title": "Startup Timeout Sec",
+      "type": "integer"
+    },
+    "teardown_timeout_sec": {
+      "default": 15,
+      "title": "Teardown Timeout Sec",
+      "type": "integer"
+    },
+    "supports_languages": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supports Languages",
+      "type": "array"
+    },
+    "supports_extensions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supports Extensions",
+      "type": "array"
+    },
+    "supports_mime_types": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supports Mime Types",
+      "type": "array"
+    },
+    "fallback": {
+      "default": false,
+      "title": "Fallback",
+      "type": "boolean"
+    },
+    "execution_model": {
+      "default": "sync",
+      "enum": [
+        "async",
+        "sync",
+        "thread_cpu_bound",
+        "process_cpu_bound"
+      ],
+      "title": "Execution Model",
+      "type": "string"
+    },
+    "in_process_only": {
+      "default": false,
+      "title": "In Process Only",
+      "type": "boolean"
+    },
+    "resources": {
+      "$ref": "#/$defs/ResourcesSpec"
+    },
+    "unit_of_work": {
+      "$ref": "#/$defs/UnitOfWorkSpec"
+    },
+    "entry_point": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Entry Point"
+    },
+    "health_check": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Health Check"
+    },
+    "command": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Command"
+    },
+    "env": {
+      "anyOf": [
+        {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Env"
+    },
+    "url": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Url"
+    },
+    "auth": {
+      "anyOf": [
+        {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Auth"
+    }
+  },
+  "required": [
+    "schema_version",
+    "name",
+    "kind",
+    "kind_api_version",
+    "core_version",
+    "runtime"
+  ],
+  "title": "dagstack plugin manifest",
+  "type": "object",
+  "$id": "https://dagstack.dev/spec/v1/manifest.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

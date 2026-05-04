@@ -1,0 +1,160 @@
+# Public type names — canonical spec-form + per-binding idiomatic rendering.
+#
+# Source of truth for stutter-avoidance (config-spec ADR-0001 §4.5
+# cross-referenced) and for the `docs-audit` tooling. Emitters and the
+# conformance runner use this file as the cross-binding registry; each
+# per-binding README references its own platform's column.
+#
+# A new binding (Rust, Java, ...) adds a row through an ADR amendment in
+# config-spec or plugin-system-spec — NOT in its own repository.
+#
+# Semantic identity: every binding on a single row implements ONE type
+# with identical semantics. Stutter-avoidance is a syntactic concern only.
+#
+# Per-binding status:
+#   implemented  — the type exists in the binding's public API
+#   planned      — the binding exists, the type is not yet implemented
+#   not-started  — the binding repo is empty (bootstrap only)
+
+version: "1.0"
+
+# Core manifest + registry (ADR-0001)
+
+types:
+  - spec_form: PluginManifest
+    kind: manifest
+    python: PluginManifest        # implemented
+    typescript: PluginManifest    # not-started
+    go: Manifest                  # stutter-avoidance: `plugin_system.Manifest`
+    note: |
+      Parsed manifest from the `dagstack.toml` file. Python — `pydantic.BaseModel`.
+
+  - spec_form: PluginRegistry
+    kind: registry
+    python: PluginRegistry        # implemented
+    typescript: PluginRegistry    # not-started
+    go: Registry                  # stutter-avoidance
+    note: |
+      Main entry point: discovery / validation / lifecycle / lookup.
+
+  - spec_form: PluginContext
+    kind: contract
+    python: PluginContext         # implemented
+    typescript: PluginContext     # not-started
+    go: Context                   # stutter-avoidance — do not confuse with stdlib context.Context
+    note: |
+      Plugin runtime context (ADR-0001 §5). Passed into hooks; carries the
+      Resources DI handle, tenant info, and so on.
+
+# Errors — ADR-0001 §4
+
+  - spec_form: PluginRegistryError
+    kind: error
+    python: PluginRegistryError   # implemented
+    typescript: PluginRegistryError
+    go: RegistryError             # stutter-avoidance
+    note: |
+      Base error for discovery / validation / lookup. Subclasses:
+      ManifestInvalid, AmbiguousPlugin, DependencyCycle, KindUnknown,
+      PluginLoadError.
+
+  - spec_form: ManifestInvalid
+    kind: error
+    python: ManifestInvalid
+    typescript: ManifestInvalid
+    go: ManifestInvalid
+    note: Subclass of RegistryError.
+
+  - spec_form: AmbiguousPlugin
+    kind: error
+    python: AmbiguousPlugin
+    typescript: AmbiguousPlugin
+    go: AmbiguousPlugin
+    note: Two plugins claim the same name/kind.
+
+  - spec_form: DependencyCycle
+    kind: error
+    python: DependencyCycle
+    typescript: DependencyCycle
+    go: DependencyCycle
+    note: Cycle detected in the topological sort.
+
+# Dispatchers — ADR-0002
+
+  - spec_form: BroadcastCollectDispatcher
+    kind: dispatcher
+    python: BroadcastCollectDispatcher    # implemented
+    typescript: BroadcastCollectDispatcher
+    go: BroadcastCollectDispatcher
+    note: Broadcast collect — every plugin is invoked and the results are gathered.
+
+  - spec_form: BroadcastNotifyDispatcher
+    kind: dispatcher
+    python: BroadcastNotifyDispatcher     # implemented
+    typescript: BroadcastNotifyDispatcher
+    go: BroadcastNotifyDispatcher
+    note: Broadcast notify — fire-and-forget; errors are caught.
+
+  - spec_form: ChainDispatcher
+    kind: dispatcher
+    python: ChainDispatcher               # implemented
+    typescript: ChainDispatcher
+    go: ChainDispatcher
+    note: Chain — each plugin's result is passed to the next; STOP_CHAIN sentinel.
+
+  - spec_form: CapabilityDispatcher
+    kind: dispatcher
+    python: CapabilityDispatcher          # implemented
+    typescript: CapabilityDispatcher
+    go: CapabilityDispatcher
+    note: Capability — the first plugin matched by can_handle services the request.
+
+# Resources DI — ADR-0003
+
+  - spec_form: ResourceRegistry
+    kind: resources
+    python: ResourceRegistry              # implemented
+    typescript: ResourceRegistry
+    go: ResourceRegistry
+    note: Ambient-free DI — registers Protocols and their implementations.
+
+  - spec_form: ResourceContainer
+    kind: resources
+    python: ResourceContainer             # implemented
+    typescript: ResourceContainer
+    go: ResourceContainer
+    note: Child-scope container, passed into PluginContext.
+
+  - spec_form: Clock
+    kind: resources-protocol
+    python: Clock                         # implemented
+    typescript: Clock
+    go: Clock
+    note: |
+      Protocol — source of time. Reference: SystemClock; test: FrozenClock.
+
+  - spec_form: Rng
+    kind: resources-protocol
+    python: Rng                           # implemented
+    typescript: Rng
+    go: Rng
+    note: |
+      Protocol — source of entropy. Reference: RandomRng;
+      test: DeterministicRng.
+
+  - spec_form: Progress
+    kind: resources-protocol
+    python: Progress                      # implemented
+    typescript: Progress
+    go: Progress
+    note: |
+      Progress reporting sink. Reference: NoOpProgressSink;
+      test: MockProgressSink.
+
+  - spec_form: CheckpointStore
+    kind: resources-protocol
+    python: CheckpointStore               # implemented
+    typescript: CheckpointStore
+    go: CheckpointStore
+    note: |
+      Checkpoint persistence. Reference: InMemoryCheckpointStore.
